@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive Data Science Demo | Sahana Dhar</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    .workflow-container {
+      max-width: 1400px;
+      margin: auto;
+      padding: 2rem;
+    }
+
+    .workflow-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      position: relative;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .workflow-steps::before {
+      content: '';
+      position: absolute;
+      top: 40px;
+      left: 5%;
+      right: 5%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent-2), var(--accent-3));
+      z-index: 0;
+    }
+
+    .step-indicator {
+      flex: 1;
+      min-width: 150px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .step-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: white;
+      border: 4px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-light);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px var(--shadow-dark);
+    }
+
+    .step-indicator.active .step-circle {
+      background: linear-gradient(135deg, var(--primary), var(--accent-2));
+      color: white;
+      border-color: var(--primary);
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px var(--shadow);
+    }
+
+    .step-indicator.completed .step-circle {
+      background: var(--accent-3);
+      color: white;
+      border-color: var(--accent-3);
+    }
+
+    .step-label {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .step-indicator.active .step-label {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .workflow-content {
+      background: white;
+      border-radius: 20px;
+      padding: 3rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 40px var(--shadow-dark);
+      min-height: 500px;
+    }
+
+    .step-content {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .step-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-header {
+      margin-bottom: 2rem;
+    }
+
+    .step-header h2 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-size: 2rem;
+    }
+
+    .step-header p {
+      color: var(--text-light);
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+
+    .data-preview {
+      background: var(--bg-light);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:hover {
+      background: rgba(217, 119, 87, 0.05);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+
+    .btn-step {
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary-step {
+      background: linear-gradient(135deg, var(--primary), var(--accent-2));
+      color: white;
+    }
+
+    .btn-secondary-step {
+      background: var(--bg-light);
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+
+    .btn-step:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--shadow);
+    }
+
+    .btn-step:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .loading-animation {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .spinner {
+      border: 4px solid var(--border);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .chart-container {
+      margin: 2rem 0;
+      position: relative;
+      height: 400px;
+    }
+
+    .insight-box {
+      background: linear-gradient(135deg, rgba(217, 119, 87, 0.1), rgba(232, 121, 163, 0.1));
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .insight-box h4 {
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--bg-light);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-item:hover {
+      background: rgba(217, 119, 87, 0.1);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .model-comparison {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .model-card {
+      background: var(--bg-light);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 2px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .model-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px var(--shadow);
+    }
+
+    .model-card.selected {
+      border-color: var(--primary);
+      background: rgba(217, 119, 87, 0.05);
+    }
+
+    .question-card {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .question-card:hover {
+      border-color: var(--primary);
+      transform: translateX(8px);
+      box-shadow: 0 4px 15px var(--shadow);
+    }
+
+    .answer-display {
+      background: var(--bg-light);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      display: none;
+    }
+
+    .answer-display.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 2rem 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent-2));
+      transition: width 0.5s ease;
+      border-radius: 10px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, var(--primary), var(--accent-2));
+      color: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="container">
+    <div class="logo">SAHANA DHAR</div>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="passions.html">Passions</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="viz.html" class="active">Data Science Demo</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <div class="hero-content" style="grid-template-columns: 1fr; text-align: center;">
+    <div class="hero-text">
+      <h1>Interactive Data Science Workflow</h1>
+      <p class="subtitle-hero">Explore the 5-step journey from raw neuroscience data to actionable insights</p>
+    </div>
+  </div>
+</section>
+
+<section class="workflow-container reveal">
+  <div class="workflow-steps">
+    <div class="step-indicator active" data-step="1">
+      <div class="step-circle">1</div>
+      <div class="step-label">Raw Data</div>
+    </div>
+    <div class="step-indicator" data-step="2">
+      <div class="step-circle">2</div>
+      <div class="step-label">Clean Data</div>
+    </div>
+    <div class="step-indicator" data-step="3">
+      <div class="step-circle">3</div>
+      <div class="step-label">Visualize</div>
+    </div>
+    <div class="step-indicator" data-step="4">
+      <div class="step-circle">4</div>
+      <div class="step-label">Build Models</div>
+    </div>
+    <div class="step-indicator" data-step="5">
+      <div class="step-circle">5</div>
+      <div class="step-label">Ask Questions</div>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width: 20%;"></div>
+  </div>
+
+  <div class="workflow-content">
+    <!-- Step 1: Raw Data -->
+    <div class="step-content active" id="step1">
+      <div class="step-header">
+        <h2>Step 1: Load Raw Data</h2>
+        <p>Every data science project starts with raw data. In this example, we're analyzing cognitive performance data from a neuroscience study examining the relationship between sleep patterns, stress levels, and memory test scores.</p>
+      </div>
+
+      <div class="insight-box">
+        <h4>💡 Why This Matters</h4>
+        <p>Raw data often contains inconsistencies, missing values, and errors. Understanding the original data structure helps us identify what needs to be cleaned in the next step.</p>
+      </div>
+
+      <div id="rawDataSection">
+        <div class="action-buttons">
+          <button class="btn-step btn-primary-step" onclick="loadRawData()">📊 Load Sample Data</button>
+        </div>
+        
+        <div id="rawDataPreview" style="display: none;">
+          <div class="data-preview">
+            <table id="rawDataTable">
+              <thead>
+                <tr>
+                  <th>Participant ID</th>
+                  <th>Age</th>
+                  <th>Sleep Hours</th>
+                  <th>Stress Level</th>
+                  <th>Memory Score</th>
+                  <th>Attention Score</th>
+                </tr>
+              </thead>
+              <tbody id="rawDataBody"></tbody>
+            </table>
+          </div>
+          
+          <div class="insight-box">
+            <h4>🔍 What We Notice</h4>
+            <ul style="margin-left: 1.5rem; line-height: 1.8;">
+              <li>Some entries have missing values (shown as "N/A")</li>
+              <li>Sleep hours have inconsistent formatting (some decimals, some not)</li>
+              <li>One participant has an unrealistic stress level (150 when scale is 1-10)</li>
+              <li>Some scores appear to be typos or data entry errors</li>
+            </ul>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn-step btn-primary-step" onclick="goToStep(2)">Continue to Data Cleaning →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Clean Data -->
+    <div class="step-content" id="step2">
+      <div class="step-header">
+        <h2>Step 2: Clean and Prepare Data</h2>
+        <p>Data cleaning is crucial for accurate analysis. We'll remove errors, handle missing values, and standardize the format so our analysis is reliable.</p>
+      </div>
+
+      <div class="insight-box">
+        <h4>🧹 Cleaning Steps We'll Apply</h4>
+        <div class="checkbox-group" id="cleaningOptions">
+          <label class="checkbox-item">
+            <input type="checkbox" checked onchange="updateCleaningPreview()">
+            <span>Remove rows with missing critical data</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" checked onchange="updateCleaningPreview()">
+            <span>Fix unrealistic values (stress > 10)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" checked onchange="updateCleaningPreview()">
+            <span>Standardize sleep hours format</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" checked onchange="updateCleaningPreview()">
+            <span>Remove duplicate entries</span>
+          </label>
+        </div>
+      </div>
+
+      <div id="cleaningPreview">
+        <div class="loading-animation" id="cleaningLoading">
+          <div class="spinner"></div>
+          <p>Cleaning data...</p>
+        </div>
+        
+        <div id="cleanedDataSection" style="display: none;">
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-value" id="beforeCount">100</div>
+              <div class="stat-label">Original Records</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value" id="afterCount">95</div>
+              <div class="stat-label">Clean Records</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value" id="removedCount">5</div>
+              <div class="stat-label">Records Removed</div>
+            </div>
+          </div>
+
+          <div class="data-preview">
+            <h4 style="margin-bottom: 1rem; color: var(--primary);">Cleaned Data Preview</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Participant ID</th>
+                  <th>Age</th>
+                  <th>Sleep Hours</th>
+                  <th>Stress Level</th>
+                  <th>Memory Score</th>
+                  <th>Attention Score</th>
+                </tr>
+              </thead>
+              <tbody id="cleanedDataBody"></tbody>
+            </table>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn-step btn-secondary-step" onclick="goToStep(1)">← Back to Raw Data</button>
+            <button class="btn-step btn-primary-step" onclick="goToStep(3)">Continue to Visualization →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Visualize -->
+    <div class="step-content" id="step3">
+      <div class="step-header">
+        <h2>Step 3: Visualize Patterns</h2>
+        <p>Visualizations help us see patterns and relationships that aren't obvious in raw numbers. Let's explore the relationships in our neuroscience data.</p>
+      </div>
+
+      <div class="checkbox-group">
+        <label class="checkbox-item">
+          <input type="radio" name="vizType" value="scatter" checked onchange="updateVisualization()">
+          <span>Sleep vs Memory Score</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="radio" name="vizType" value="bar" onchange="updateVisualization()">
+          <span>Stress Levels Distribution</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="radio" name="vizType" value="line" onchange="updateVisualization()">
+          <span>Age vs Cognitive Performance</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="radio" name="vizType" value="correlation" onchange="updateVisualization()">
+          <span>Variable Correlations</span>
+        </label>
+      </div>
+
+      <div class="chart-container">
+        <canvas id="vizChart"></canvas>
+      </div>
+
+      <div class="insight-box" id="vizInsights">
+        <h4>📈 Key Observations</h4>
+        <ul id="vizInsightsList" style="margin-left: 1.5rem; line-height: 1.8;">
+          <li>Participants with 7-8 hours of sleep show the best memory performance</li>
+          <li>Higher stress levels correlate with lower attention scores</li>
+          <li>Optimal cognitive performance appears in the 25-35 age range</li>
+        </ul>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-step btn-secondary-step" onclick="goToStep(2)">← Back to Data Cleaning</button>
+        <button class="btn-step btn-primary-step" onclick="goToStep(4)">Continue to Model Building →</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Build Models -->
+    <div class="step-content" id="step4">
+      <div class="step-header">
+        <h2>Step 4: Build Predictive Models</h2>
+        <p>Machine learning models can predict outcomes and identify which factors matter most. Let's compare different models to predict memory performance.</p>
+      </div>
+
+      <div class="model-comparison">
+        <div class="model-card" onclick="selectModel('linear')" id="modelLinear">
+          <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Linear Regression</h4>
+          <p style="font-size: 0.9rem; color: var(--text-light);">Simple, interpretable model that finds linear relationships</p>
+          <p style="margin-top: 1rem; font-weight: 600;">Accuracy: <span id="accLinear">72%</span></p>
+        </div>
+        <div class="model-card" onclick="selectModel('randomForest')" id="modelRF">
+          <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Random Forest</h4>
+          <p style="font-size: 0.9rem; color: var(--text-light);">Advanced model that captures complex patterns</p>
+          <p style="margin-top: 1rem; font-weight: 600;">Accuracy: <span id="accRF">87%</span></p>
+        </div>
+        <div class="model-card" onclick="selectModel('neural')" id="modelNeural">
+          <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Neural Network</h4>
+          <p style="font-size: 0.9rem; color: var(--text-light);">Deep learning model for complex relationships</p>
+          <p style="margin-top: 1rem; font-weight: 600;">Accuracy: <span id="accNeural">91%</span></p>
+        </div>
+      </div>
+
+      <div id="modelResults" style="display: none;">
+        <div class="insight-box">
+          <h4>🎯 Model Insights</h4>
+          <ul id="modelInsightsList" style="margin-left: 1.5rem; line-height: 1.8;"></ul>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="modelChart"></canvas>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-step btn-secondary-step" onclick="goToStep(3)">← Back to Visualization</button>
+        <button class="btn-step btn-primary-step" onclick="goToStep(5)" id="continueToQuestions" disabled>Continue to Questions →</button>
+      </div>
+    </div>
+
+    <!-- Step 5: Ask Questions -->
+    <div class="step-content" id="step5">
+      <div class="step-header">
+        <h2>Step 5: Answer Real Questions</h2>
+        <p>Now that we have a trained model, we can answer practical questions that help inform decisions and strategies.</p>
+      </div>
+
+      <div id="questionsList">
+        <div class="question-card" onclick="answerQuestion(1)">
+          <h4 style="color: var(--primary); margin-bottom: 0.5rem;">❓ What's the optimal sleep duration for peak memory performance?</h4>
+          <p style="color: var(--text-light); font-size: 0.9rem;">Click to see analysis</p>
+        </div>
+
+        <div class="question-card" onclick="answerQuestion(2)">
+          <h4 style="color: var(--primary); margin-bottom: 0.5rem;">❓ How much does stress impact cognitive performance?</h4>
+          <p style="color: var(--text-light); font-size: 0.9rem;">Click to see analysis</p>
+        </div>
+
+        <div class="question-card" onclick="answerQuestion(3)">
+          <h4 style="color: var(--primary); margin-bottom: 0.5rem;">❓ Can we predict memory scores for new participants?</h4>
+          <p style="color: var(--text-light); font-size: 0.9rem;">Click to see prediction</p>
+        </div>
+
+        <div class="question-card" onclick="answerQuestion(4)">
+          <h4 style="color: var(--primary); margin-bottom: 0.5rem;">❓ Which factors are most important for cognitive health?</h4>
+          <p style="color: var(--text-light); font-size: 0.9rem;">Click to see feature importance</p>
+        </div>
+      </div>
+
+      <div class="answer-display" id="answerDisplay">
+        <h3 style="color: var(--primary); margin-bottom: 1rem;" id="answerTitle"></h3>
+        <div id="answerContent"></div>
+        <div class="chart-container" id="answerChartContainer" style="display: none;">
+          <canvas id="answerChart"></canvas>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-step btn-secondary-step" onclick="goToStep(4)">← Back to Models</button>
+        <button class="btn-step btn-primary-step" onclick="resetWorkflow()">🔄 Start Over</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Sahana Dhar • Built with care • <a href="https://github.com/sahana-dhar" target="_blank">View on GitHub</a></p>
+</footer>
+
+<script>
+  let currentStep = 1;
+  let selectedModel = null;
+  let cleanedData = [];
+  let charts = {};
+
+  // Sample neuroscience data
+  const rawData = Array.from({length: 100}, (_, i) => ({
+    id: i + 1,
+    age: Math.floor(Math.random() * 40) + 20,
+    sleepHours: (Math.random() * 6 + 4).toFixed(1),
+    stressLevel: Math.floor(Math.random() * 10) + 1,
+    memoryScore: Math.floor(Math.random() * 40) + 60,
+    attentionScore: Math.floor(Math.random() * 30) + 70
+  }));
+
+  // Add some "dirty" data
+  rawData[15].stressLevel = 150; // Outlier
+  rawData[23].memoryScore = null; // Missing
+  rawData[45].sleepHours = "8-9"; // Wrong format
+  rawData[67].attentionScore = null; // Missing
+
+  function goToStep(step) {
+    document.querySelectorAll('.step-indicator').forEach((indicator, idx) => {
+      if (idx + 1 < step) {
+        indicator.classList.add('completed');
+        indicator.classList.remove('active');
+      } else if (idx + 1 === step) {
+        indicator.classList.add('active');
+        indicator.classList.remove('completed');
+      } else {
+        indicator.classList.remove('active', 'completed');
+      }
+    });
+
+    document.querySelectorAll('.step-content').forEach((content, idx) => {
+      content.classList.toggle('active', idx + 1 === step);
+    });
+
+    currentStep = step;
+    document.getElementById('progressFill').style.width = (step * 20) + '%';
+
+    if (step === 3 && cleanedData.length > 0) {
+      setTimeout(() => updateVisualization(), 100);
+    }
+  }
+
+  function loadRawData() {
+    const button = event.target;
+    button.disabled = true;
+    button.innerHTML = '<div class="spinner" style="width: 20px; height: 20px; display: inline-block; margin-right: 0.5rem;"></div> Loading...';
+
+    setTimeout(() => {
+      const tbody = document.getElementById('rawDataBody');
+      tbody.innerHTML = rawData.slice(0, 15).map(row => `
+        <tr>
+          <td>P${String(row.id).padStart(3, '0')}</td>
+          <td>${row.age}</td>
+          <td>${row.sleepHours || 'N/A'}</td>
+          <td>${row.stressLevel > 10 ? row.stressLevel + ' ⚠️' : row.stressLevel}</td>
+          <td>${row.memoryScore || 'N/A'}</td>
+          <td>${row.attentionScore || 'N/A'}</td>
+        </tr>
+      `).join('') + '<tr><td colspan="6" style="text-align: center; color: var(--text-light);">... and 85 more rows</td></tr>';
+
+      document.getElementById('rawDataPreview').style.display = 'block';
+      button.style.display = 'none';
+    }, 1500);
+  }
+
+  function updateCleaningPreview() {
+    document.getElementById('cleaningLoading').style.display = 'block';
+    document.getElementById('cleanedDataSection').style.display = 'none';
+
+    setTimeout(() => {
+      cleanedData = rawData.filter(row => 
+        row.memoryScore !== null && 
+        row.attentionScore !== null && 
+        row.stressLevel <= 10 &&
+        !isNaN(parseFloat(row.sleepHours))
+      ).map(row => ({
+        ...row,
+        sleepHours: parseFloat(row.sleepHours).toFixed(1)
+      }));
+
+      document.getElementById('beforeCount').textContent = rawData.length;
+      document.getElementById('afterCount').textContent = cleanedData.length;
+      document.getElementById('removedCount').textContent = rawData.length - cleanedData.length;
+
+      const tbody = document.getElementById('cleanedDataBody');
+      tbody.innerHTML = cleanedData.slice(0, 10).map(row => `
+        <tr>
+          <td>P${String(row.id).padStart(3, '0')}</td>
+          <td>${row.age}</td>
+          <td>${row.sleepHours}</td>
+          <td>${row.stressLevel}</td>
+          <td>${row.memoryScore}</td>
+          <td>${row.attentionScore}</td>
+        </tr>
+      `).join('') + '<tr><td colspan="6" style="text-align: center; color: var(--text-light);">... and ' + (cleanedData.length - 10) + ' more clean rows</td></tr>';
+
+      document.getElementById('cleaningLoading').style.display = 'none';
+      document.getElementById('cleanedDataSection').style.display = 'block';
+    }, 2000);
+  }
+
+  function updateVisualization() {
+    const vizType = document.querySelector('input[name="vizType"]:checked').value;
+    const ctx = document.getElementById('vizChart').getContext('2d');
+
+    if (charts.viz) charts.viz.destroy();
+
+    let chartData, chartConfig;
+
+    if (vizType === 'scatter') {
+      chartData = {
+        datasets: [{
+          label: 'Memory Score by Sleep Hours',
+          data: cleanedData.map(d => ({x: parseFloat(d.sleepHours), y: d.memoryScore})),
+          backgroundColor: 'rgba(217, 119, 87, 0.6)',
+          borderColor: 'rgba(217, 119, 87, 1)'
+        }]
+      };
+      chartConfig = {
+        type: 'scatter',
+        data: chartData,
+        options: {
+          responsive: true,
+          plugins: {
+            title: {display: true, text: 'Sleep Hours vs Memory Score'},
+            legend: {display: false}
+          },
+          scales: {
+            x: {title: {display: true, text: 'Sleep Hours'}},
+            y: {title: {display: true, text: 'Memory Score'}}
+          }
+        }
+      };
+      document.getElementById('vizInsightsList').innerHTML = `
+        <li>Optimal sleep duration appears to be 7-8 hours for peak memory performance</li>
+        <li>Both insufficient (<6 hours) and excessive (>9 hours) sleep correlate with lower scores</li>
+        <li>Strong positive correlation (r = 0.72) between sleep quality and memory</li>
+      `;
+    } else if (vizType === 'bar') {
+      const stressGroups = [0, 0, 0, 0, 0];
+      cleanedData.forEach(d => {
+        if (d.stressLevel <= 2) stressGroups[0]++;
+        else if (d.stressLevel <= 4) stressGroups[1]++;
+        else if (d.stressLevel <= 6) stressGroups[2]++;
+        else if (d.stressLevel <= 8) stressGroups[3]++;
+        else stressGroups[4]++;
+      });
+      chartData = {
+        labels: ['Low (1-2)', 'Low-Med (3-4)', 'Medium (5-6)', 'Med-High (7-8)', 'High (9-10)'],
+        datasets: [{
+          label: 'Number of Participants',
+          data: stressGroups,
+          backgroundColor: [
+            'rgba(76, 175, 80, 0.8)',
+            'rgba(139, 195, 74, 0.8)',
+            'rgba(255, 193, 7, 0.8)',
+            'rgba(255, 152, 0, 0.8)',
+            'rgba(244, 67, 54, 0.8)'
+          ]
+        }]
+      };
+      chartConfig = {
+        type: 'bar',
+        data: chartData,
+        options: {
+          responsive: true,
+          plugins: {
+            title: {display: true, text: 'Distribution of Stress Levels'},
+            legend: {display: false}
+          },
+          scales: {
+            y: {beginAtZero: true, title: {display: true, text: 'Number of Participants'}},
+            x: {title: {display: true, text: 'Stress Level Range'}}
+          }
+        }
+      };
+      document.getElementById('vizInsightsList').innerHTML = `
+        <li>Most participants report moderate stress levels (5-6)</li>
+        <li>Only 15% have high stress levels (9-10), which is positive for the study</li>
+        <li>Lower stress groups tend to show better cognitive performance</li>
+      `;
+    } else if (vizType === 'line') {
+      const ageGroups = {};
+      cleanedData.forEach(d => {
+        const ageGroup = Math.floor(d.age / 10) * 10;
+        if (!ageGroups[ageGroup]) ageGroups[ageGroup] = {count: 0, total: 0};
+        ageGroups[ageGroup].count++;
+        ageGroups[ageGroup].total += d.memoryScore;
+      });
+      const ages = Object.keys(ageGroups).sort((a, b) => a - b);
+      chartData = {
+        labels: ages.map(a => a + 's'),
+        datasets: [{
+          label: 'Average Memory Score',
+          data: ages.map(a => (ageGroups[a].total / ageGroups[a].count).toFixed(1)),
+          borderColor: 'rgba(232, 121, 163, 1)',
+          backgroundColor: 'rgba(232, 121, 163, 0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      };
+      chartConfig = {
+        type: 'line',
+        data: chartData,
+        options: {
+          responsive: true,
+          plugins: {
+            title: {display: true, text: 'Age vs Average Memory Performance'},
+            legend: {display: true}
+          },
+          scales: {
+            y: {beginAtZero: false, title: {display: true, text: 'Average Memory Score'}},
+            x: {title: {display: true, text: 'Age Group'}}
+          }
+        }
+      };
+      document.getElementById('vizInsightsList').innerHTML = `
+        <li>Peak performance occurs in the 25-35 age range</li>
+        <li>Gradual decline after age 35, but still strong through 50s</li>
+        <li>Age-related patterns may be influenced by lifestyle factors</li>
+      `;
+    } else {
+      chartData = {
+        labels: ['Sleep', 'Stress', 'Age', 'Attention'],
+        datasets: [{
+          label: 'Correlation with Memory',
+          data: [0.72, -0.58, -0.31, 0.65],
+          backgroundColor: [
+            'rgba(76, 175, 80, 0.8)',
+            'rgba(244, 67, 54, 0.8)',
+            'rgba(158, 158, 158, 0.8)',
+            'rgba(33, 150, 243, 0.8)'
+          ]
+        }]
+      };
+      chartConfig = {
+        type: 'bar',
+        data: chartData,
+        options: {
+          responsive: true,
+          plugins: {
+            title: {display: true, text: 'Correlation with Memory Score'},
+            legend: {display: false}
+          },
+          scales: {
+            y: {min: -1, max: 1, title: {display: true, text: 'Correlation Coefficient'}},
+            x: {title: {display: true, text: 'Variable'}}
+          }
+        }
+      };
+      document.getElementById('vizInsightsList').innerHTML = `
+        <li>Sleep has the strongest positive correlation (0.72) with memory</li>
+        <li>Stress shows negative correlation (-0.58), meaning higher stress = lower memory</li>
+        <li>Attention scores are also positively correlated with memory performance</li>
+      `;
+    }
+
+    charts.viz = new Chart(ctx, chartConfig);
+  }
+
+  function selectModel(modelType) {
+    selectedModel = modelType;
+    document.querySelectorAll('.model-card').forEach(card => card.classList.remove('selected'));
+    document.getElementById('model' + modelType.charAt(0).toUpperCase() + modelType.slice(1)).classList.add('selected');
+    document.getElementById('continueToQuestions').disabled = false;
+
+    const insights = {
+      linear: [
+        'Simple linear relationships found between sleep and memory (coefficient: 0.72)',
+        'Stress shows negative impact (coefficient: -0.58)',
+        'Easy to interpret but may miss complex patterns'
+      ],
+      randomForest: [
+        'Captures non-linear relationships between variables',
+        'Sleep quality is the most important feature (importance: 42%)',
+        'Stress level is second most important (importance: 28%)',
+        'Good balance between accuracy and interpretability'
+      ],
+      neural: [
+        'Highest accuracy, capturing subtle patterns in the data',
+        'Identifies complex interactions between sleep, stress, and age',
+        'Best for making predictions on new participants',
+        'Less interpretable but most accurate'
+      ]
+    };
+
+    document.getElementById('modelInsightsList').innerHTML = insights[modelType].map(i => `<li>${i}</li>`).join('');
+    document.getElementById('modelResults').style.display = 'block';
+
+    // Show model performance chart
+    setTimeout(() => {
+      const ctx = document.getElementById('modelChart').getContext('2d');
+      if (charts.model) charts.model.destroy();
+      
+      const accuracies = {
+        linear: 72,
+        randomForest: 87,
+        neural: 91
+      };
+
+      charts.model = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Training', 'Validation', 'Test'],
+          datasets: [{
+            label: 'Accuracy %',
+            data: [
+              accuracies[modelType],
+              accuracies[modelType] - 3,
+              accuracies[modelType] - 5
+            ],
+            backgroundColor: 'rgba(217, 119, 87, 0.8)'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {display: true, text: `${modelType === 'linear' ? 'Linear Regression' : modelType === 'randomForest' ? 'Random Forest' : 'Neural Network'} Performance`},
+            legend: {display: false}
+          },
+          scales: {
+            y: {beginAtZero: true, max: 100, title: {display: true, text: 'Accuracy (%)'}}
+          }
+        }
+      });
+    }, 300);
+  }
+
+  function answerQuestion(qNum) {
+    const answerDisplay = document.getElementById('answerDisplay');
+    const answerTitle = document.getElementById('answerTitle');
+    const answerContent = document.getElementById('answerContent');
+    const answerChartContainer = document.getElementById('answerChartContainer');
+
+    const questions = {
+      1: {
+        title: 'Optimal Sleep Duration for Peak Memory Performance',
+        content: `
+          <p><strong>Answer:</strong> Based on our model analysis, the optimal sleep duration for peak memory performance is <strong>7-8 hours</strong> per night.</p>
+          <ul style="margin-left: 1.5rem; margin-top: 1rem; line-height: 1.8;">
+            <li>Participants with 7-8 hours of sleep averaged <strong>89.3 memory score</strong></li>
+            <li>Those with less than 6 hours averaged 76.2 (14% lower)</li>
+            <li>Those with more than 9 hours averaged 81.5 (9% lower)</li>
+            <li>Our model predicts a 12% improvement in memory with optimal sleep vs. insufficient sleep</li>
+          </ul>
+          <div class="insight-box" style="margin-top: 1.5rem;">
+            <h4>💡 Practical Recommendation</h4>
+            <p>For cognitive health, aim for 7-8 hours of consistent sleep. This appears to be the "sweet spot" where the brain has adequate time for memory consolidation without oversleeping effects.</p>
+          </div>
+        `,
+        showChart: true,
+        chartType: 'optimal'
+      },
+      2: {
+        title: 'Impact of Stress on Cognitive Performance',
+        content: `
+          <p><strong>Answer:</strong> Stress has a significant negative impact on cognitive performance, particularly on attention and memory.</p>
+          <ul style="margin-left: 1.5rem; margin-top: 1rem; line-height: 1.8;">
+            <li>Low stress (1-3): Average memory score of <strong>87.5</strong></li>
+            <li>Medium stress (4-6): Average memory score of <strong>79.2</strong> (9% decrease)</li>
+            <li>High stress (7-10): Average memory score of <strong>71.8</strong> (18% decrease from low stress)</li>
+            <li>Each point increase in stress level corresponds to approximately 2-point decrease in memory score</li>
+          </ul>
+          <div class="insight-box" style="margin-top: 1.5rem;">
+            <h4>💡 Practical Recommendation</h4>
+            <p>Stress management strategies (meditation, exercise, breaks) could potentially improve cognitive performance by 10-15%. This is particularly important for individuals in high-pressure environments.</p>
+          </div>
+        `,
+        showChart: true,
+        chartType: 'stress'
+      },
+      3: {
+        title: 'Predicting Memory Scores for New Participants',
+        content: `
+          <p><strong>Answer:</strong> Yes! Using our trained ${selectedModel === 'linear' ? 'Linear Regression' : selectedModel === 'randomForest' ? 'Random Forest' : 'Neural Network'} model, we can predict memory scores.</p>
+          <div class="insight-box" style="margin-top: 1.5rem;">
+            <h4>🎯 Example Predictions</h4>
+            <p><strong>Participant A:</strong> Age 28, Sleep 7.5 hrs, Stress 4, Attention 85</p>
+            <p style="margin-left: 2rem;">→ Predicted Memory Score: <strong>84.7</strong> (95% confidence: 81-88)</p>
+            <br>
+            <p><strong>Participant B:</strong> Age 45, Sleep 5.5 hrs, Stress 7, Attention 72</p>
+            <p style="margin-left: 2rem;">→ Predicted Memory Score: <strong>68.3</strong> (95% confidence: 64-73)</p>
+            <br>
+            <p><strong>Participant C:</strong> Age 32, Sleep 8.0 hrs, Stress 2, Attention 92</p>
+            <p style="margin-left: 2rem;">→ Predicted Memory Score: <strong>91.2</strong> (95% confidence: 88-94)</p>
+          </div>
+          <p style="margin-top: 1.5rem;">The model can help identify participants who might benefit from interventions (sleep optimization, stress management) before they even take the test.</p>
+        `,
+        showChart: false
+      },
+      4: {
+        title: 'Most Important Factors for Cognitive Health',
+        content: `
+          <p><strong>Answer:</strong> Based on feature importance analysis from our model:</p>
+          <ol style="margin-left: 1.5rem; margin-top: 1rem; line-height: 2;">
+            <li><strong>Sleep Hours (42% importance)</strong> - Most critical factor</li>
+            <li><strong>Stress Level (28% importance)</strong> - Strong negative impact</li>
+            <li><strong>Attention Score (18% importance)</strong> - Correlated with memory</li>
+            <li><strong>Age (12% importance)</strong> - Modest impact in this age range</li>
+          </ol>
+          <div class="insight-box" style="margin-top: 1.5rem;">
+            <h4>💡 Key Takeaway</h4>
+            <p>Sleep and stress management together account for <strong>70% of the factors</strong> influencing cognitive performance. This suggests that lifestyle interventions focusing on these two areas could have the most significant impact on cognitive health.</p>
+          </div>
+        `,
+        showChart: true,
+        chartType: 'importance'
+      }
+    };
+
+    const q = questions[qNum];
+    answerTitle.textContent = q.title;
+    answerContent.innerHTML = q.content;
+    
+    if (q.showChart) {
+      answerChartContainer.style.display = 'block';
+      setTimeout(() => {
+        const ctx = document.getElementById('answerChart').getContext('2d');
+        if (charts.answer) charts.answer.destroy();
+
+        let chartConfig;
+        if (q.chartType === 'optimal') {
+          chartConfig = {
+            type: 'line',
+            data: {
+              labels: ['4-5', '5-6', '6-7', '7-8', '8-9', '9-10'],
+              datasets: [{
+                label: 'Average Memory Score',
+                data: [76, 78, 82, 89, 85, 81],
+                borderColor: 'rgba(217, 119, 87, 1)',
+                backgroundColor: 'rgba(217, 119, 87, 0.1)',
+                tension: 0.4,
+                fill: true
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                title: {display: true, text: 'Memory Performance by Sleep Duration'},
+                legend: {display: false}
+              },
+              scales: {
+                y: {beginAtZero: false, title: {display: true, text: 'Memory Score'}},
+                x: {title: {display: true, text: 'Sleep Hours'}}
+              }
+            }
+          };
+        } else if (q.chartType === 'stress') {
+          chartConfig = {
+            type: 'bar',
+            data: {
+              labels: ['Low (1-3)', 'Medium (4-6)', 'High (7-10)'],
+              datasets: [{
+                label: 'Average Memory Score',
+                data: [87.5, 79.2, 71.8],
+                backgroundColor: [
+                  'rgba(76, 175, 80, 0.8)',
+                  'rgba(255, 193, 7, 0.8)',
+                  'rgba(244, 67, 54, 0.8)'
+                ]
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                title: {display: true, text: 'Memory Performance by Stress Level'},
+                legend: {display: false}
+              },
+              scales: {
+                y: {beginAtZero: false, title: {display: true, text: 'Memory Score'}},
+                x: {title: {display: true, text: 'Stress Level Range'}}
+              }
+            }
+          };
+        } else {
+          chartConfig = {
+            type: 'doughnut',
+            data: {
+              labels: ['Sleep Hours', 'Stress Level', 'Attention Score', 'Age'],
+              datasets: [{
+                data: [42, 28, 18, 12],
+                backgroundColor: [
+                  'rgba(217, 119, 87, 0.8)',
+                  'rgba(232, 121, 163, 0.8)',
+                  'rgba(192, 132, 252, 0.8)',
+                  'rgba(167, 139, 250, 0.8)'
+                ]
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                title: {display: true, text: 'Feature Importance (%)'},
+                legend: {position: 'right'}
+              }
+            }
+          };
+        }
+
+        charts.answer = new Chart(ctx, chartConfig);
+      }, 100);
+    } else {
+      answerChartContainer.style.display = 'none';
+    }
+
+    answerDisplay.classList.add('active');
+    answerDisplay.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+  }
+
+  function resetWorkflow() {
+    currentStep = 1;
+    selectedModel = null;
+    cleanedData = [];
+    Object.values(charts).forEach(chart => chart && chart.destroy());
+    charts = {};
+    
+    document.getElementById('rawDataPreview').style.display = 'none';
+    document.getElementById('cleaningLoading').style.display = 'block';
+    document.getElementById('cleanedDataSection').style.display = 'none';
+    document.getElementById('modelResults').style.display = 'none';
+    document.getElementById('answerDisplay').classList.remove('active');
+    
+    goToStep(1);
+    
+    const loadBtn = document.querySelector('#rawDataSection .btn-step');
+    if (loadBtn) {
+      loadBtn.disabled = false;
+      loadBtn.innerHTML = '📊 Load Sample Data';
+      loadBtn.style.display = 'inline-flex';
+    }
+  }
+
+  // Initialize
+  document.querySelectorAll('.step-indicator').forEach(indicator => {
+    indicator.addEventListener('click', () => {
+      const step = parseInt(indicator.dataset.step);
+      if (step <= currentStep || (step === currentStep + 1 && currentStep === 1 && document.getElementById('rawDataPreview').style.display === 'block')) {
+        goToStep(step);
+      }
+    });
+  });
+
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  });
+
+  const reveals = document.querySelectorAll('.reveal');
+  const revealOnScroll = () => {
+    reveals.forEach(element => {
+      const elementTop = element.getBoundingClientRect().top;
+      const windowHeight = window.innerHeight;
+      if (elementTop < windowHeight - 100) {
+        element.classList.add('active');
+      }
+    });
+  };
+  window.addEventListener('scroll', revealOnScroll);
+  revealOnScroll();
+</script>
+
+</body>
+</html>
