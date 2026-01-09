@@ -4,429 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sahana Dhar | Data Science & AI Portfolio</title>
-
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --primary: #d97757;
-      --primary-dark: #b4533a;
-      --secondary: #a78bfa;
-      --accent-1: #f6b093;
-      --accent-2: #e879a3;
-      --accent-3: #c084fc;
-      --text: #3f3d56;
-      --text-light: #6b7280;
-      --bg: #fffaf7;
-      --bg-light: #fef3ec;
-      --border: #f1e4dc;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-      scroll-behavior: smooth;
-    }
-
-    nav {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      background: rgba(255,250,247,0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-      z-index: 1000;
-      transition: box-shadow 0.3s ease;
-    }
-
-    nav.scrolled {
-      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
-    }
-
-    nav .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    nav .logo {
-      font-size: 1.3rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--primary), var(--accent-2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    nav ul {
-      list-style: none;
-      display: flex;
-      gap: 2rem;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: var(--text);
-      font-weight: 600;
-      transition: color 0.3s ease;
-    }
-
-    nav a:hover { color: var(--primary); }
-
-    .hero {
-      margin-top: 80px;
-      padding: 6rem 2rem;
-      text-align: center;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
-      color: white;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
-      opacity: 0.3;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero h1 {
-      font-size: 3.5rem;
-      margin-bottom: 1rem;
-      animation: fadeInUp 0.8s ease;
-    }
-
-    .hero .subtitle-hero {
-      max-width: 720px;
-      margin: 0 auto 1.5rem;
-      font-size: 1.4rem;
-      opacity: 0.95;
-      animation: fadeInUp 1s ease;
-    }
-
-    .hero .tagline {
-      max-width: 720px;
-      margin: auto;
-      font-size: 1.1rem;
-      opacity: 0.9;
-      animation: fadeInUp 1.2s ease;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .hero-links {
-      margin-top: 2rem;
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      animation: fadeInUp 1.4s ease;
-    }
-
-    .btn {
-      padding: 0.75rem 1.5rem;
-      border-radius: 10px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      display: inline-block;
-    }
-
-    .btn-primary {
-      background: white;
-      color: var(--primary);
-    }
-
-    .btn-outline {
-      border: 2px solid white;
-      color: white;
-      background: transparent;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    }
-
-    .btn-primary:hover {
-      background: var(--bg);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 5rem 2rem;
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 4rem;
-    }
-
-    h2 {
-      font-size: 2.6rem;
-      margin-bottom: 1rem;
-      background: linear-gradient(135deg, var(--primary), var(--accent-2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .subtitle {
-      color: var(--text-light);
-      max-width: 700px;
-      margin: 0 auto;
-      font-size: 1.15rem;
-    }
-
-    .about-content {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .about-content p {
-      margin-bottom: 1.5rem;
-      font-size: 1.1rem;
-      line-height: 1.8;
-    }
-
-    .tech-stack {
-      margin-top: 3rem;
-      padding: 2rem;
-      background: white;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-    }
-
-    .tech-stack h3 {
-      color: var(--primary);
-      margin-bottom: 1.5rem;
-      font-size: 1.5rem;
-    }
-
-    .tech-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
-    }
-
-    .tech-category h4 {
-      color: var(--text);
-      margin-bottom: 0.75rem;
-      font-size: 1.1rem;
-    }
-
-    .tech-category ul {
-      list-style: none;
-    }
-
-    .tech-category li {
-      padding: 0.4rem 0;
-      color: var(--text-light);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 2rem;
-    }
-
-    .card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2rem;
-      transition: all 0.4s ease;
-      opacity: 0;
-      animation: fadeInCard 0.6s ease forwards;
-    }
-
-    @keyframes fadeInCard {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .card:nth-child(1) { animation-delay: 0.1s; }
-    .card:nth-child(2) { animation-delay: 0.2s; }
-    .card:nth-child(3) { animation-delay: 0.3s; }
-    .card:nth-child(4) { animation-delay: 0.4s; }
-    .card:nth-child(5) { animation-delay: 0.5s; }
-    .card:nth-child(6) { animation-delay: 0.6s; }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 15px 40px rgba(217, 119, 87, 0.15);
-      border-color: var(--primary);
-    }
-
-    .card h3 {
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-      font-size: 1.5rem;
-    }
-
-    .card > p:first-of-type {
-      margin-top: 0.5rem;
-    }
-
-    .tag {
-      display: inline-block;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      color: white;
-      padding: 0.4rem 0.9rem;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-    }
-
-    .links {
-      margin-top: 1.5rem;
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .links a {
-      background: var(--primary);
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .links a:hover { 
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-    }
-
-    .embed {
-      margin-top: 1.5rem;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: var(--bg-light);
-    }
-
-    .embed iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .embed.coming-soon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-light);
-      font-style: italic;
-    }
-
-    .contact-section {
-      text-align: center;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
-      color: white;
-      padding: 5rem 2rem;
-      border-radius: 24px;
-      margin: 3rem auto;
-      max-width: 1200px;
-    }
-
-    .contact-section h2 {
-      color: white;
-      background: none;
-      -webkit-text-fill-color: white;
-      margin-bottom: 1.5rem;
-    }
-
-    .contact-section p {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
-      opacity: 0.95;
-    }
-
-    footer {
-      background: var(--text);
-      color: white;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    footer a {
-      color: var(--accent-1);
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 2.4rem; }
-      .hero .subtitle-hero { font-size: 1.1rem; }
-      .hero .tagline { font-size: 1rem; }
-      nav ul { gap: 1rem; }
-      .grid { grid-template-columns: 1fr; }
-      h2 { font-size: 2rem; }
-    }
-
-    /* Scroll reveal animation */
-    .reveal {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 0.6s ease;
-    }
-
-    .reveal.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 
 <nav id="navbar">
   <div class="container">
-    <div class="logo">Sahana Dhar</div>
+    <div class="logo">SAHANA DHAR</div>
     <ul>
-      <li><a href="#about">About</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#experience">Experience</a></li>
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="passions.html">Passions</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="projects.html">Projects</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </div>
@@ -434,16 +23,27 @@
 
 <section class="hero">
   <div class="hero-content">
+    <div class="hero-text">
     <h1>Hi, I'm Sahana!</h1>
-    <p class="subtitle-hero">Fourth Year Data Science & Behavioral Neuroscience Student</p>
+      <p class="subtitle-hero">Data Science & Behavioral Neuroscience Student</p>
     <p class="tagline">
-      I'm passionate about machine learning, data analytics, and AI for impact—especially when applied to understanding human behavior and decision-making.
+        Building AI solutions for social impact, exploring the intersection of machine learning and human behavior, 
+        and turning data into actionable insights that drive meaningful change.
     </p>
     <div class="hero-links">
-      <a class="btn btn-primary" href="https://drive.google.com/file/d/1VL5C2WOcKRlT8GqVbiB_f7fQGJWYjuo2/view" target="_blank">Resume</a>
-      <a class="btn btn-outline" href="https://github.com/sahana-dhar" target="_blank">GitHub</a>
-      <a class="btn btn-outline" href="https://linkedin.com/in/sahana-dhar" target="_blank">LinkedIn</a>
-      <a class="btn btn-outline" href="mailto:dhar.s@northeastern.edu">Email</a>
+        <a class="btn btn-primary" href="https://drive.google.com/file/d/1VL5C2WOcKRlT8GqVbiB_f7fQGJWYjuo2/view" target="_blank">📄 Resume</a>
+        <a class="btn btn-outline" href="https://github.com/sahana-dhar" target="_blank">💻 GitHub</a>
+        <a class="btn btn-outline" href="https://linkedin.com/in/sahana-dhar" target="_blank">🔗 LinkedIn</a>
+        <a class="btn btn-outline" href="mailto:dhar.s@northeastern.edu">📧 Email</a>
+      </div>
+    </div>
+    <div class="headshot-container">
+      <div class="headshot-wrapper">
+        <div class="headshot-decoration"></div>
+        <div class="headshot-oval">
+          <img src="IMG_5340.JPG" alt="Sahana Dhar">
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -451,33 +51,32 @@
 <section id="about" class="container reveal">
   <div class="section-header">
     <h2>About Me</h2>
-    <p class="subtitle">Data science, behavioral neuroscience, and applied AI</p>
+    <p class="subtitle">Building AI for impact at the intersection of data science and behavioral neuroscience</p>
   </div>
 
   <div class="about-content">
     <p>
-      I'm a Data Science and Behavioral Neuroscience student at Northeastern University (Class of 2026) 
-      with a 3.93 GPA and Dean's List recognition. My work sits at the intersection of <strong>machine learning</strong>, 
-      <strong>statistical modeling</strong>, and <strong>human behavior</strong>—exploring how data can reveal patterns 
-      in personality, decision-making, education outcomes, and engagement.
+      I'm a Data Science and Behavioral Neuroscience student at <strong>Northeastern University</strong> (Class of 2026) 
+      with a <strong>3.93 GPA</strong> and Dean's List recognition. My work sits at the intersection of machine learning, 
+      statistical modeling, and human behavior—exploring how data can reveal patterns in personality, decision-making, 
+      education outcomes, and engagement.
     </p>
 
     <p>
-      I've built end-to-end data pipelines using AWS (Glue, Redshift, Lambda, Bedrock), developed predictive ML models 
-      achieving 95% accuracy, and created AI-powered platforms for public sector impact. My experience spans work with 
-      the <strong>Massachusetts Executive Office of Energy and Environmental Affairs</strong>, <strong>Tenerity</strong>, 
-      and <strong>The Roux Institute</strong>, where I've implemented generative AI solutions, customer analytics systems, 
-      and educational AI curricula.
+      I've built end-to-end data pipelines using <strong>AWS</strong> (Glue, Redshift, Lambda, Bedrock), developed predictive ML models 
+      achieving <strong>95% accuracy</strong>, and created AI-powered platforms for public sector impact. My experience spans work with 
+      the Massachusetts Executive Office of Energy and Environmental Affairs, Tenerity, and The Roux Institute, where I've 
+      implemented generative AI solutions, customer analytics systems, and educational AI curricula for 1,100+ learners.
     </p>
 
     <p>
-      Currently, I'm focused on implementing AI for social impact with the State of Massachusetts and City of Boston, 
+      Currently, I'm focused on implementing <strong>AI for social impact</strong> with the State of Massachusetts and City of Boston, 
       designing systems that are not only powerful but also responsible, accessible, and grounded in understanding 
       the humans they serve.
     </p>
 
     <div class="tech-stack">
-      <h3> Tech Stack</h3>
+      <h3>💻 Tech Stack</h3>
       <div class="tech-grid">
         <div class="tech-category">
           <h4>Languages</h4>
@@ -490,7 +89,7 @@
         <div class="tech-category">
           <h4>ML & Data Science</h4>
           <ul>
-            <li>Scikit-learn, TensorFlow</li>
+            <li>Scikit-learn, XGBoost</li>
             <li>PySpark, Pandas, NumPy</li>
             <li>LangChain, RAG, NLP</li>
           </ul>
@@ -499,18 +98,66 @@
           <h4>Cloud & Infrastructure</h4>
           <ul>
             <li>AWS (S3, Glue, Redshift, Lambda)</li>
-            <li>AWS Bedrock, DynamoDB</li>
-            <li>Docker, Airflow, Snowflake</li>
+            <li>AWS Bedrock, DynamoDB, Airflow</li>
+            <li>Docker, Snowflake</li>
           </ul>
         </div>
         <div class="tech-category">
           <h4>Tools & Platforms</h4>
           <ul>
             <li>Git/GitHub, Bitbucket</li>
-            <li>Flask, Excel, Confluence</li>
-            <li>Data Visualization Tools</li>
+            <li>Flask, Appsmith</li>
+            <li>Excel, Confluence</li>
           </ul>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience" class="container reveal">
+  <div class="section-header">
+    <h2>Experience Highlights</h2>
+    <p class="subtitle">Building AI products and data solutions across public sector, industry, and education</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <span class="tag">Generative AI • Sept 2025 – Dec 2025</span>
+      <h3>AI Product Developer</h3>
+      <p><strong>Massachusetts Executive Office of Energy & Environmental Affairs</strong></p>
+      <p>
+        Built a secure, multi-agent generative AI platform for Massachusetts state agencies using AWS Bedrock, 
+        Lambda, and DynamoDB. Reduced AI application development time from weeks to minutes.
+      </p>
+      <div class="links">
+        <a href="experience.html">View Details →</a>
+        </div>
+    </div>
+
+    <div class="card">
+      <span class="tag">Data Science • Apr 2025 – Current</span>
+      <h3>Data Science Intern</h3>
+      <p><strong>Tenerity</strong></p>
+      <p>
+        Developed ETL pipelines processing millions of records. Built ML models achieving 95% accuracy in 
+        churn prediction, delivering actionable insights for global campaigns.
+      </p>
+      <div class="links">
+        <a href="experience.html">View Details →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="tag">Education • Jun 2024 – Apr 2026</span>
+      <h3>AI Resource Developer</h3>
+      <p><strong>The Roux Institute</strong></p>
+      <p>
+        Designed and launched AI curricula for 1,100+ learners, covering Python programming, prompt engineering, 
+        and ML fundamentals across partner companies.
+      </p>
+      <div class="links">
+        <a href="experience.html">View Details →</a>
       </div>
     </div>
   </div>
@@ -519,164 +166,45 @@
 <section id="projects" class="container reveal">
   <div class="section-header">
     <h2>Featured Projects</h2>
-    <p class="subtitle">Selected work across machine learning, NLP, education analytics, and applied AI</p>
-  </div>
+    <p class="subtitle">Machine learning, NLP, and data-driven solutions</p>
+    </div>
 
   <div class="grid">
-
     <div class="card">
-      <span class="tag">🏆 First Place — Northeastern DATA Club</span>
-      <h3>Five Factor Model of Personality & Drug Habits</h3>
+      <span class="tag">🏆 First Place Winner</span>
+      <h3>Personality & Drug Habits Analysis</h3>
       <p>
-        Award-winning statistical and regression-based analysis linking Big Five personality traits
-        to substance use patterns across 18 drug categories. Applied multiple regression techniques
-        to identify personality profiles most associated with substance use risk, providing insights
-        for targeted intervention strategies.
+        Award-winning regression analysis linking Big Five personality traits to substance use patterns. 
+        Identified personality profiles associated with substance use risk.
       </p>
       <div class="links">
-        <a href="https://github.com/sahana-dhar/The-Five-Factor-Model-of-Personality-and-its-Relationship-to-Drug-Habits-" target="_blank">GitHub</a>
-        <a href="https://drive.google.com/file/d/1USPR_oQLq7cph5EjddzRre32SuX6Ae2B/view?usp=share_link">Slides</a>
-      </div>
-      <div class="embed">
-        <iframe 
-            src="https://drive.google.com/file/d/1USPR_oQLq7cph5EjddzRre32SuX6Ae2B/preview"
-            loading="lazy">
-        </iframe>
-        </div>
-    </div>
-
-    <div class="card">
-      <span class="tag">Interactive Visualization</span>
-      <h3>Global School Enrollment Trends</h3>
-      <p>
-        Web-based interactive visualization analyzing global enrollment patterns, regional disparities, 
-        and longitudinal education access trends. Built with D3.js and deployed as a standalone web application 
-        to explore educational equity across countries and time periods.
-      </p>
-      <div class="links">
-        <a href="https://sahana-dhar.github.io/Global-School-Enrollments/" target="_blank">Live Site</a>
-        <a href="https://github.com/sahana-dhar/Global-School-Enrollments" target="_blank">GitHub</a>
-      </div>
-      <div class="embed">
-        <iframe src="https://sahana-dhar.github.io/Global-School-Enrollments/"></iframe>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="tag">Predictive Modeling</span>
-      <h3>Student Retention in Higher Education</h3>
-      <p>
-        Machine learning analysis of 800+ U.S. universities identifying institutional and demographic factors
-        most correlated with student retention outcomes. Trained and compared ensemble models (Random Forest, 
-        K-Nearest Neighbors, Linear Regression) to isolate the top 5 features driving retention rates.
-      </p>
-      <div class="links">
-        <a href="https://github.com/sahana-dhar/Understanding-Student-Retention-in-Higher-Education-" target="_blank">GitHub</a>
-        <a href="https://drive.google.com/file/d/1AlCj1yamvQDiJPcoO4rCbzNycR-4BwrT/view?usp=sharing" target="_blank">Presentation</a>
-      </div>
-      <div class="embed">
-        <iframe src="https://drive.google.com/file/d/1AlCj1yamvQDiJPcoO4rCbzNycR-4BwrT/preview" allow="autoplay"></iframe>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="tag">Generative AI</span>
-      <h3>Interactive Resume Chatbot</h3>
-      <p>
-        Retrieval-augmented conversational agent powered by LangChain and vector embeddings that answers 
-        questions about my background, experience, and projects. Implements semantic search over my resume 
-        and portfolio to provide contextually relevant responses.
-      </p>
-      <div class="links">
-        <a href="https://github.com/sahana-dhar/sahana_interactive_resume_chatbot" target="_blank">GitHub</a>
+        <a href="projects.html">View All Projects →</a>
       </div>
     </div>
 
     <div class="card">
       <span class="tag">Full Stack Application</span>
-      <h3>Talentia — Appsmith Platform</h3>
+      <h3>Talentia Platform</h3>
       <p>
-        Full-stack platform built with Appsmith and Flask to connect talent, agents, and casting professionals. 
-        Features include profile management, user authentication, real-time interactions, and SQL database integration. 
-        Containerized with Docker for deployment scalability.
+        Full-stack platform connecting talent, agents, and casting professionals with Flask, Appsmith, 
+        and Docker. Features profile management and real-time interactions.
       </p>
       <div class="links">
-        <a href="https://www.youtube.com/watch?v=U6a8FvpfvTM" target="_blank">Demo Video</a>
-        <a href="https://github.com/sahana-dhar/Talentia_Appsmith" target="_blank">GitHub</a>
-      </div>
-      <div class="embed">
-        <iframe src="https://www.youtube.com/embed/U6a8FvpfvTM" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <a href="projects.html">View All Projects →</a>
       </div>
     </div>
 
     <div class="card">
-      <span class="tag">Natural Language Processing</span>
-      <h3>NLP Experiments</h3>
+      <span class="tag">Predictive Modeling</span>
+      <h3>Student Retention Analysis</h3>
       <p>
-        Collection of NLP pipelines and experiments including text preprocessing, word embeddings (Word2Vec, GloVe), 
-        sentiment analysis, and transformer-based architectures. Explores various techniques for text classification, 
-        semantic similarity, and language modeling.
+        ML analysis of 800+ universities identifying key retention factors. Trained ensemble models to 
+        isolate top 5 features driving retention rates.
       </p>
       <div class="links">
-        <a href="https://github.com/sahana-dhar/NLProcessing" target="_blank">GitHub</a>
+        <a href="projects.html">View All Projects →</a>
       </div>
     </div>
-
-  </div>
-</section>
-
-<section id="experience" class="container reveal">
-  <div class="section-header">
-    <h2>Work Experience</h2>
-    <p class="subtitle">Industry, public sector, and education-focused AI work</p>
-  </div>
-
-  <div class="grid">
-
-    <div class="card">
-      <span class="tag">Sept 2025 – Dec 2025</span>
-      <h3>Generative AI Product Developer</h3>
-      <p><strong>Massachusetts Executive Office of Energy & Environmental Affairs</strong></p>
-      <p>
-        Built a secure, multi-agent generative AI platform for Massachusetts state agencies using AWS Bedrock, 
-        Lambda, DynamoDB, and custom orchestration. Designed cloud-native architecture enabling bureaus to create 
-        and manage department-specific AI chatbots from a single interface. Reduced AI application development 
-        time from weeks to minutes through a guided workflow.
-      </p>
-      <div class="links">
-        <a href="https://drive.google.com/file/d/13OG7FqBHKYhjP1Oz4VkiUCTOPgwX1RUc/view" target="_blank">Demo Video</a>
-        <a href="https://github.com/massgov-eoeea/aws-genai-llm-chatbot/tree/aihub-experiments" target="_blank">Repository</a>
-      </div>
-      <div class="embed">
-        <iframe src="https://drive.google.com/file/d/13OG7FqBHKYhjP1Oz4VkiUCTOPgwX1RUc/preview" allow="autoplay"></iframe>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="tag">Apr 2025 – Current</span>
-      <h3>Data Science Intern</h3>
-      <p><strong>Tenerity</strong></p>
-      <p>
-        Developed end-to-end ETL pipelines using AWS Glue, Airflow, Redshift, and Python to process millions of 
-        customer records. Built and deployed predictive ML models (Random Forest, XGBoost, Logistic Regression) 
-        achieving 95% accuracy in churn prediction. Conducted customer lifecycle analysis and cohort-based segmentation, 
-        delivering actionable insights for global merchandising campaigns and retention strategy.
-      </p>
-    </div>
-
-    <div class="card">
-      <span class="tag">Jun 2024 – Apr 2026</span>
-      <h3>AI Resource Developer</h3>
-      <p><strong>The Roux Institute</strong></p>
-      <p>
-        Designed and launched AI and technology curricula for 1,100+ learners across partner companies. 
-        Developed comprehensive courses including <strong>Data Literacy Fundamentals</strong>, 
-        <strong>Maximizing Productivity with Generative AI</strong>, and <strong>Business Transformation 
-        with AI</strong>. Created hands-on learning modules integrating Python programming, prompt engineering, 
-        and ML fundamentals to bridge theoretical concepts with real-world application.
-      </p>
-    </div>
-
   </div>
 </section>
 
@@ -684,10 +212,10 @@
   <h2>Let's Connect</h2>
   <p>Interested in collaborating or learning more about my work? I'd love to hear from you.</p>
   <div class="hero-links">
-    <a class="btn btn-primary" href="mailto:dhar.s@northeastern.edu">Email Me</a>
-    <a class="btn btn-outline" href="https://github.com/sahana-dhar" target="_blank">GitHub</a>
-    <a class="btn btn-outline" href="https://linkedin.com/in/sahana-dhar" target="_blank">LinkedIn</a>
-    <a class="btn btn-outline" href="https://drive.google.com/file/d/1VL5C2WOcKRlT8GqVbiB_f7fQGJWYjuo2/view" target="_blank">Resume</a>
+    <a class="btn btn-primary" href="mailto:dhar.s@northeastern.edu">📧 Email Me</a>
+    <a class="btn btn-outline" href="https://github.com/sahana-dhar" target="_blank">💻 GitHub</a>
+    <a class="btn btn-outline" href="https://linkedin.com/in/sahana-dhar" target="_blank">🔗 LinkedIn</a>
+    <a class="btn btn-outline" href="https://drive.google.com/file/d/1VL5C2WOcKRlT8GqVbiB_f7fQGJWYjuo2/view" target="_blank">📄 Resume</a>
   </div>
 </section>
 
