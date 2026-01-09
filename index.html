@@ -179,6 +179,21 @@
 
     .links a:hover { background: var(--primary-dark); }
 
+    .embed {
+      margin-top: 1.5rem;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .embed iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
     footer {
       background: var(--text);
       color: white;
@@ -198,25 +213,41 @@
   <div class="container">
     <strong>Sahana Dhar</strong>
     <ul>
+      <li><a href="#about">About</a></li>
       <li><a href="#projects">Projects</a></li>
       <li><a href="#experience">Experience</a></li>
-      <li><a href="#about">About</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </div>
 </nav>
 
 <section class="hero">
-  <h1>Data Science, AI, and Human Behavior</h1>
+  <h1>Sahana Dhar</h1>
   <p>
-    I build machine learning and generative AI systems grounded in behavioral
-    science, education, and real-world impact.
+    Data Scientist working at the intersection of machine learning,
+    generative AI, and human behavior.
   </p>
   <div class="hero-links">
     <a class="btn btn-primary" href="https://drive.google.com/file/d/1VL5C2WOcKRlT8GqVbiB_f7fQGJWYjuo2/view" target="_blank">Resume</a>
     <a class="btn btn-outline" href="https://github.com/sahana-dhar">GitHub</a>
     <a class="btn btn-outline" href="https://linkedin.com/in/sahana-dhar">LinkedIn</a>
   </div>
+</section>
+
+<section id="about" class="container">
+  <h2>About Me</h2>
+  <p class="subtitle">Data science, behavioral neuroscience, and applied AI.</p>
+
+  <p>
+    I am a Data Science and Behavioral Neuroscience student at Northeastern University
+    with a strong focus on machine learning, statistical modeling, and generative AI.
+  </p>
+
+  <p>
+    My work centers on understanding human behavior through data — including personality,
+    decision-making, education outcomes, and engagement — and translating those insights
+    into responsible, real-world AI systems.
+  </p>
 </section>
 
 <section id="projects" class="container">
@@ -235,6 +266,9 @@
       <div class="links">
         <a href="https://github.com/sahana-dhar/The-Five-Factor-Model-of-Personality-and-its-Relationship-to-Drug-Habits-" target="_blank">GitHub</a>
         <a href="https://drive.google.com/file/d/1VL5C2WOcKRlT8GqVbiB_f7fQGJWYjuo2/view" target="_blank">Slides</a>
+      </div>
+      <div class="embed">
+        <iframe src="https://drive.google.com/file/d/1VL5C2WOcKRlT8GqVbiB_f7fQGJWYjuo2/preview"></iframe>
       </div>
     </div>
 
@@ -261,6 +295,10 @@
       <div class="links">
         <a href="https://github.com/sahana-dhar/Understanding-Student-Retention-in-Higher-Education-" target="_blank">GitHub</a>
       </div>
+      <div class="embed">
+        <!-- Drop demo video here when ready -->
+        <iframe src="" title="Student Retention Demo (Coming Soon)"></iframe>
+      </div>
     </div>
 
     <div class="card">
@@ -286,6 +324,9 @@
         <a href="https://www.youtube.com/watch?v=U6a8FvpfvTM" target="_blank">Demo Video</a>
         <a href="https://github.com/sahana-dhar/Talentia_Appsmith" target="_blank">GitHub</a>
       </div>
+      <div class="embed">
+        <iframe src="https://www.youtube.com/embed/U6a8FvpfvTM"></iframe>
+      </div>
     </div>
 
     <div class="card">
@@ -310,6 +351,17 @@
   <div class="grid">
 
     <div class="card">
+      <h3>Data Science Intern</h3>
+      <p><strong> Tenerity</strong></p>
+      <p>
+        Built large-scale analytical pipelines to study billing behavior, churn,
+        and customer engagement across international markets. Performed exploratory
+        analysis, feature engineering, and modeling to support retention strategy
+        and business decision-making.
+      </p>
+    </div>
+
+    <div class="card">
       <h3>Generative AI Product Developer</h3>
       <p><strong>Massachusetts Executive Office of Energy & Environmental Affairs</strong></p>
       <p>
@@ -323,8 +375,8 @@
     </div>
 
     <div class="card">
-      <h3>AI & Data Science Educator</h3>
-      <p><strong>Independent / Academic Programs</strong></p>
+      <h3>AI Resource Developer</h3>
+      <p><strong>The Roux Institute </strong></p>
       <p>
         Designed and taught data literacy and generative AI productivity courses
         for students and early professionals.
@@ -332,24 +384,6 @@
     </div>
 
   </div>
-</section>
-
-<section id="about" class="container">
-  <h2>About Me</h2>
-  <p class="subtitle">
-    Data scientist and behavioral neuroscience student building human-centered AI.
-  </p>
-
-  <p>
-    I am a Data Science and Behavioral Neuroscience student at Northeastern University
-    with a strong focus on machine learning, generative AI, and behavioral analysis.
-  </p>
-
-  <p>
-    My interests center on understanding human behavior through data — from
-    personality and decision-making to education, engagement, and retention —
-    and translating those insights into responsible AI systems.
-  </p>
 </section>
 
 <section id="contact" class="container">
